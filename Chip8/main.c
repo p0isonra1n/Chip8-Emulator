@@ -93,14 +93,6 @@ int main(int argc, char **argv){
 	    unsigned short nnn = OPCODE & 0x0FFF;
 	    unsigned char kk = OPCODE & 0xFF;
 
-        for(int gfxX = 0; gfxX < 64; gfxX++){
-            for(int gfxY = 0; gfxY < 32; gfxY++){
-                printf("%x", GFX[gfxX + gfxY]);
-            }
-            printf("\n");
-        }
-
-
         printf("PC: %x \n", PC);
         printf("OPCODE: %04x \n", OPCODE);
         printf("nnn: %02x \n", nnn);
@@ -108,10 +100,21 @@ int main(int argc, char **argv){
         
         switch(OPCODE & 0xF000){
             case 0x0000:
-                printf("Unused OPCODE");
+                if(OPCODE == 0x00EE){
+                    if(SP == 0){
+                        printf("Stack Pointer is already 0 can not return any more!");
+                        exit(1);
+                    }
+                    PC = STACK[--SP];
+                }else{
+                    printf("Not implemented");
+                }
                 break;
             case 0x2000: //CALL nnn
-                //TODO: Check stack is not full
+                if(SP >= 16){
+                        printf("Stack Pointer is full, can not jump again!");
+                        exit(1);
+                    }
                 STACK[SP++] = PC;
                 PC = nnn;
                 break;
@@ -126,6 +129,7 @@ int main(int argc, char **argv){
                 break;
             case 0xD000:
                 printf("Draw to screen not implemented yet \n");
+                draw_to_screen();
                 break;
             case 0xF000:
                 switch(kk){
@@ -146,4 +150,13 @@ int main(int argc, char **argv){
         //if(PC > 0x220) exit(1);
     }
 
+}
+
+int draw_to_screen(){
+    for(int gfxX = 0; gfxX < 64; gfxX++){
+        for(int gfxY = 0; gfxY < 32; gfxY++){
+            printf("%x", GFX[gfxX + gfxY]);
+        }
+        printf("\n");
+    }
 }
