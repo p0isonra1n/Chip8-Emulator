@@ -178,6 +178,12 @@ int main(int argc, char **argv){
                     case 0x07:
                         V[x] = Delay_Counter;
                         break;
+                    case 0x15: // LD DT, Vx 
+                        Delay_Counter = V[x];
+                        break;
+                    case 0x29: //LD F, Vx
+                        I = FONT_OFFSET + (V[x] & 0x0F) * 5;
+                        break;
                     case 0x65:
                         if(I + x > MAX_RAM){
                             x = MAX_RAM - I;
