@@ -115,6 +115,15 @@ int main(int argc, char **argv){
             case 0xD000:
                 printf("Draw to screen not implemented yet \n");
                 break;
+            case 0xF000:
+                switch(kk){
+                    case 0x33: // LD B, Vx
+                        RAM[I] = (V[x] / 100) % 10;
+					    RAM[I + 1] = (V[x] / 10) % 10;
+					    RAM[I + 2] = V[x] % 10;
+                        break;
+                }
+                break;
             default:
                 printf("Unknown OPCODE \n");
                 exit(1);
