@@ -4,9 +4,14 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "main.h"
+
 
 #define MAX_RAM 409600
 #define PROGRAM_OFFSET 512
+#define FONT_OFFSET 0x180
+
+
 #define DEBUG 1
 
 
@@ -23,6 +28,26 @@ unsigned char GFX[64 * 32]; //64 Pixels by 32 Pixels
 
 unsigned char Delay_Counter;
 unsigned char Sound_Counter;
+
+/* Standard 4x5 font */
+static unsigned char font[] = {
+/* '0' */ 0xF0, 0x90, 0x90, 0x90, 0xF0,
+/* '1' */ 0x20, 0x60, 0x20, 0x20, 0x70,
+/* '2' */ 0xF0, 0x10, 0xF0, 0x80, 0xF0,
+/* '3' */ 0xF0, 0x10, 0xF0, 0x10, 0xF0,
+/* '4' */ 0x90, 0x90, 0xF0, 0x10, 0x10,
+/* '5' */ 0xF0, 0x80, 0xF0, 0x10, 0xF0,
+/* '6' */ 0xF0, 0x80, 0xF0, 0x90, 0xF0,
+/* '7' */ 0xF0, 0x10, 0x20, 0x40, 0x40,
+/* '8' */ 0xF0, 0x90, 0xF0, 0x90, 0xF0,
+/* '9' */ 0xF0, 0x90, 0xF0, 0x10, 0xF0,
+/* 'A' */ 0xF0, 0x90, 0xF0, 0x90, 0x90,
+/* 'B' */ 0xE0, 0x90, 0xE0, 0x90, 0xE0,
+/* 'C' */ 0xF0, 0x80, 0x80, 0x80, 0xF0,
+/* 'D' */ 0xE0, 0x80, 0x80, 0x80, 0xE0,
+/* 'E' */ 0xF0, 0x80, 0xF0, 0x80, 0xF0,
+/* 'F' */ 0xF0, 0x80, 0xF0, 0x80, 0x80,
+};
 
 
 int main(int argc, char **argv){
@@ -77,6 +102,7 @@ int main(int argc, char **argv){
     SP = 0;
     memset(V, 0, sizeof V);
     memset(STACK, 0, sizeof STACK);
+    memcpy(RAM + FONT_OFFSET, font, sizeof font);
 
     unsigned int RUNNING = 1;
     /*
@@ -97,7 +123,7 @@ int main(int argc, char **argv){
         printf("PC: %x \n", PC);
         printf("OPCODE: %04x \n", OPCODE);
         printf("nnn: %02x \n", nnn);
-        printf("V0: %02x V1: %02x V2: %02x V3: %02x V4: %02x V5: %02x V6: %02x V7: %02x V8: %02x V9: %02x VA: %02x VB: %02x VC: %02x VD: %02x VE: %02x \n", V[0], V[1],V[2],V[3],V[4],V[5],V[6],V[7],V[8],V[9],V[10],V[11],V[12],V[13],V[14],V[15]);
+        printf("V0: %02x V1: %02x V2: %02x V3: %02x V4: %02x V5: %02x V6: %02x V7: %02x V8: %02x V9: %02x VA: %02x VB: %02x VC: %02x VD: %02x VE: %02x \n", V[0], V[1],V[2],V[3],V[4],V[5],V[6],V[7],V[8],V[9],V[10],V[11],V[12],V[13],V[14]);
         
         PC += 2;
 
