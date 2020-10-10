@@ -22,6 +22,7 @@ unsigned short STACK[16];
 unsigned short SP;
 
 unsigned char GFX[64 * 32]; //64 Pixels by 32 Pixels
+int GFX_UPDATED;
 
 unsigned char Delay_Counter;
 unsigned char Sound_Counter;
@@ -165,6 +166,7 @@ int main(int argc, char **argv)
     Delay_Counter = 0;
     Sound_Counter = 0;
     SP = 0;
+    GFX_UPDATED = 0;
     memset(V, 0, sizeof V);
     memset(STACK, 0, sizeof STACK);
     memcpy(RAM + FONT_OFFSET, font, sizeof font);
@@ -196,9 +198,10 @@ void step()
     printf("PC: %x \n", PC);
     printf("OPCODE: %04x \n", OPCODE);
     printf("nnn: %02x \n", nnn);
-    printf("V0: %02x V1: %02x V2: %02x V3: %02x V4: %02x V5: %02x V6: %02x V7: %02x V8: %02x V9: %02x VA: %02x VB: %02x VC: %02x VD: %02x VE: %02x \n", V[0], V[1], V[2], V[3], V[4], V[5], V[6], V[7], V[8], V[9], V[10], V[11], V[12], V[13], V[14]);
+    printf("V0: %02x V1: %02x V2: %02x V3: %02x V4: %02x V5: %02x V6: %02x V7: %02x V8: %02x V9: %02x VA: %02x VB: %02x VC: %02x VD: %02x VE: %02x VF: %02x \n", V[0], V[1], V[2], V[3], V[4], V[5], V[6], V[7], V[8], V[9], V[10], V[11], V[12], V[13], V[14], V[15]);
 
     PC += 2;
+    GFX_UPDATED = 0;
 
     switch (OPCODE & 0xF000)
     {
@@ -244,8 +247,26 @@ void step()
     case 0xA000:
         I = OPCODE & 0x0FFF;
         break;
+    case 0xC000: // RND Vx, byte
+        V[x] = (rand() % 256) & kk;
+        break;
     case 0xD000:
-        printf("Draw to screen not implemented yet \n");
+        x = V[x]; y = V[y];
+		for(int q = 0; q < nibble; q++) {
+			for(int p = 0; p < 8; p++) {
+				int pix = (RAM[I + q] & (0x80 >> p)) != 0;
+				if(pix) {
+                    int tx = (x + p) & 0x3F, ty = (y + q) & 0x1F;
+					int byte = ty * 64 + tx;
+					int bit = 1 << (byte & 0x07);
+                    byte >>= 3;
+					if(GFX[byte] & bit)
+					    V[0x0F] = 1;
+					GFX[byte] ^= bit;				
+				}				
+			}		
+		}		
+        GFX_UPDATED = 1;
         draw_to_screen();
         break;
     case 0xF000:
@@ -298,12 +319,14 @@ void tick(){
 
 int draw_to_screen()
 {
-    for (int gfxX = 0; gfxX < 64; gfxX++)
-    {
-        for (int gfxY = 0; gfxY < 32; gfxY++)
+    if(GFX_UPDATED){
+        for (int gfxX = 0; gfxX < 64; gfxX++)
         {
-            printf("%x", GFX[gfxX + gfxY]);
+            for (int gfxY = 0; gfxY < 32; gfxY++)
+            {
+                printf("%x", GFX[gfxX + gfxY]);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
 }
