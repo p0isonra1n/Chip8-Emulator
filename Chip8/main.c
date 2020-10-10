@@ -109,6 +109,9 @@ int main(int argc, char **argv){
             case 0x6000: //6xkk LD Vx, byte
                 V[x] = kk;
                 break;
+            case 0x7000: // ADD Vx, byte
+                V[x] = V[x] + kk;
+                break;
             case 0xA000:
                 I = OPCODE & 0x0FFF;
                 break;
