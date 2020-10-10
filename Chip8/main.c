@@ -317,14 +317,27 @@ void tick(){
     if(Sound_Counter > 0) Sound_Counter--;
 }
 
+int get_pixel(int x, int y){
+    int byte, bit;
+	int w = 64; 
+    int h = 32;
+	if(x < 0 || x >= w || y < 0 || y >= h) return 0;
+	byte = y * w + x;
+	bit = byte & 0x07;
+	byte >>= 3;
+	assert(byte < sizeof GFX);
+	assert(bit < 8);
+	return (GFX[byte] & (1 << bit)) != 0;
+}
+
 int draw_to_screen()
 {
     if(GFX_UPDATED){
-        for (int gfxX = 0; gfxX < 64; gfxX++)
+        for (int gfxY = 0; gfxY < 32; gfxY++)
         {
-            for (int gfxY = 0; gfxY < 32; gfxY++)
+            for (int gfxX = 0; gfxX < 64; gfxX++)
             {
-                printf("%x", GFX[gfxX + gfxY]);
+                printf("%d", get_pixel(gfxX, gfxY));
             }
             printf("\n");
         }
