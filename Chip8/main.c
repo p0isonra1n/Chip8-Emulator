@@ -92,6 +92,15 @@ int main(int argc, char **argv){
 	    unsigned char nibble = OPCODE & 0x0F;
 	    unsigned short nnn = OPCODE & 0x0FFF;
 	    unsigned char kk = OPCODE & 0xFF;
+
+        for(int gfxX = 0; gfxX < 64; gfxX++){
+            for(int gfxY = 0; gfxY < 32; gfxY++){
+                printf("%x", GFX[gfxX + gfxY]);
+            }
+            printf("\n");
+        }
+
+
         printf("PC: %x \n", PC);
         printf("OPCODE: %04x \n", OPCODE);
         printf("nnn: %02x \n", nnn);
