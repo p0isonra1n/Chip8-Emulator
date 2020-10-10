@@ -100,20 +100,20 @@ int main(int argc, char **argv){
         switch(OPCODE & 0xF000){
             case 0x0000:
                 printf("Unused OPCODE");
-                failed_runs++;
-                if(failed_runs > 5) exit(1);
                 break;
             case 0x2000: //CALL nnn
                 //TODO: Check stack is not full
                 STACK[SP++] = PC;
                 PC = nnn;
-                exit(1);
                 break;
             case 0x6000: //6xkk LD Vx, byte
                 V[x] = kk;
                 break;
             case 0xA000:
                 I = OPCODE & 0x0FFF;
+                break;
+            case 0xD000:
+                printf("Draw to screen not implemented yet \n");
                 break;
             default:
                 printf("Unknown OPCODE \n");
