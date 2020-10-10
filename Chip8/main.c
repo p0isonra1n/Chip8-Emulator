@@ -98,6 +98,8 @@ int main(int argc, char **argv){
         printf("nnn: %02x \n", nnn);
         printf("V0: %02x V1: %02x V2: %02x V3: %02x V4: %02x V5: %02x V6: %02x V7: %02x V8: %02x V9: %02x VA: %02x VB: %02x VC: %02x VD: %02x VE: %02x \n", V[0], V[1],V[2],V[3],V[4],V[5],V[6],V[7],V[8],V[9],V[10],V[11],V[12],V[13],V[14],V[15]);
         
+        PC += 2;
+
         switch(OPCODE & 0xF000){
             case 0x0000:
                 if(OPCODE == 0x00EE){
@@ -110,6 +112,9 @@ int main(int argc, char **argv){
                     printf("Not implemented");
                 }
                 break;
+            case 0x1000: // JP addr
+                PC = nnn;
+                break;
             case 0x2000: //CALL nnn
                 if(SP >= 16){
                         printf("Stack Pointer is full, can not jump again!");
@@ -117,6 +122,11 @@ int main(int argc, char **argv){
                     }
                 STACK[SP++] = PC;
                 PC = nnn;
+                break;
+            case 0x3000:
+                if(V[x] == kk){
+                    PC += 2;
+                }
                 break;
             case 0x6000: //6xkk LD Vx, byte
                 V[x] = kk;
@@ -138,6 +148,13 @@ int main(int argc, char **argv){
 					    RAM[I + 1] = (V[x] / 10) % 10;
 					    RAM[I + 2] = V[x] % 10;
                         break;
+                    case 0x07:
+                        V[x] = Delay_Counter;
+                        break;
+                    default:
+                        printf("0xF0%02x is not implemented\n", kk);
+                        exit(1);
+                        break;
                 }
                 break;
             default:
@@ -145,7 +162,6 @@ int main(int argc, char **argv){
                 exit(1);
                 break;
         } 
-        PC += 2;
         printf("\n\n");
         //if(PC > 0x220) exit(1);
     }
