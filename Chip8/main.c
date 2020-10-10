@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 
 #define MAX_RAM 409600
@@ -150,6 +151,15 @@ int main(int argc, char **argv){
                         break;
                     case 0x07:
                         V[x] = Delay_Counter;
+                        break;
+                    case 0x65:
+                        if(I + x > MAX_RAM){
+                            x = MAX_RAM - I;
+                        }
+                        assert(I + x <= MAX_RAM);
+                        if(x >= 0){
+                            memcpy(V, RAM + I, x + 1);
+                        }
                         break;
                     default:
                         printf("0xF0%02x is not implemented\n", kk);
